@@ -16,7 +16,8 @@ const USER_NAME_LENGTH: usize = 100;
 const USER_URL_LENGTH: usize = 255;
 const VIDEO_URL_LENGTH: usize = 255;
 
-const NUMBER_OF_ALLOWED_LIKES: usize = 5;
+const NUMBER_OF_ALLOWED_LIKES_SPACE: usize = 5;
+const NUMBER_OF_ALLOWED_LIKES: u8 = 5;
 /// TikTok Clone program
 #[program]
 pub mod tiktok_clone {
@@ -215,7 +216,7 @@ pub struct CreateVideo<'info> {
         seeds = [b"video".as_ref(), state.video_count.to_be_bytes().as_ref()],
         bump,
         payer = authority,
-        space = size_of::<VideoAccount>() + TEXT_LENGTH + USER_NAME_LENGTH + USER_URL_LENGTH+VIDEO_URL_LENGTH+8+32*NUMBER_OF_ALLOWED_LIKES // 32 bits in a pubkey and we have 5
+        space = size_of::<VideoAccount>() + TEXT_LENGTH + USER_NAME_LENGTH + USER_URL_LENGTH+VIDEO_URL_LENGTH+8+32*NUMBER_OF_ALLOWED_LIKES_SPACE // 32 bits in a pubkey and we have 5
     )]
     pub video: Account<'info, VideoAccount>,
 
