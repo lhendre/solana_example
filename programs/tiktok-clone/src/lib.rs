@@ -16,6 +16,7 @@ const USER_NAME_LENGTH: usize = 100;
 const USER_URL_LENGTH: usize = 255;
 const VIDEO_URL_LENGTH: usize = 255;
 
+const NUMBER_OF_ALLOWED_LIKES: usize = 5;
 /// TikTok Clone program
 #[program]
 pub mod tiktok_clone {
@@ -99,7 +100,7 @@ pub mod tiktok_clone {
 
         // Get video
         let video = &mut ctx.accounts.video;
-        if video.remove == -500 {
+        if video.remove <= -500 {
             return Err(Errors::UserCensoredVideo.into());
         }
         // Get comment
@@ -125,7 +126,6 @@ pub mod tiktok_clone {
 
     pub fn approve(
         ctx: Context<CreateComment>,
-
     ) -> ProgramResult {
         // Get video
         let video = &mut ctx.accounts.video;
@@ -152,7 +152,7 @@ pub mod tiktok_clone {
     pub fn like_video(ctx: Context<LikeVideo>, user_liking_video: Pubkey) -> ProgramResult {
         let video = &mut ctx.accounts.video;
 
-        if video.likes == 5 {
+        if video.likes == NUMBER_OF_ALLOWED_LIKES {
             return Err(Errors::ReachedMaxLikes.into());
         }
         if video.remove == -500 {
@@ -161,6 +161,7 @@ pub mod tiktok_clone {
 
         // Iterating accounts is safer then indexing
         let mut iter = video.people_who_liked.iter();
+
         if iter.any(|&v| v == user_liking_video) {
             return Err(Errors::UserLikedVideo.into());
         }
@@ -214,7 +215,7 @@ pub struct CreateVideo<'info> {
         seeds = [b"video".as_ref(), state.video_count.to_be_bytes().as_ref()],
         bump,
         payer = authority,
-        space = size_of::<VideoAccount>() + TEXT_LENGTH + USER_NAME_LENGTH + USER_URL_LENGTH+VIDEO_URL_LENGTH+8+32*5 // 32 bits in a pubkey and we have 5
+        space = size_of::<VideoAccount>() + TEXT_LENGTH + USER_NAME_LENGTH + USER_URL_LENGTH+VIDEO_URL_LENGTH+8+32*NUMBER_OF_ALLOWED_LIKES // 32 bits in a pubkey and we have 5
     )]
     pub video: Account<'info, VideoAccount>,
 
