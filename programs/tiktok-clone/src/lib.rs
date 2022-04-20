@@ -194,8 +194,7 @@ pub struct CreateState<'info> {
     pub authority: Signer<'info>,
 
     /// System program
-    /// CHECK: Simple test account for tiktok
-    pub system_program: UncheckedAccount<'info>,
+    pub system_program: Program<'info, System>,
 
     // Token program
     #[account(constraint = token_program.key == &token::ID)]
